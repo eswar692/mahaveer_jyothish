@@ -10,7 +10,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
     ViteSitemap({
-      hostname: "https://devisriprasadastro.in",
+      hostname: "https://www.keralavedaconsult.in",
+      dynamicRoutes: [
+        "/",
+        "/about",
+        "/services",
+        "/contact",
+        "/privacy-policy",
+        "/terms",
+      ],
     }),
   ],
   resolve: {
