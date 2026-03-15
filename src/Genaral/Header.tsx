@@ -138,7 +138,7 @@ const LogoBlock = () => {
         {/* Photo */}
         <div className="absolute inset-[3px] rounded-full overflow-hidden ring-1 ring-[#d4af37]/20">
           <img
-            src="https://i.pinimg.com/1200x/19/6b/2d/196b2d46fb8864dfb588c18655d4a3f1.jpg"
+            src="https://i.pinimg.com/736x/d4/1f/1a/d41f1a22b07e63a6fe9d62e9679daea1.jpg"
             alt={`${company_name} logo`}
             className={`
               w-full h-full object-cover transition-transform duration-700
