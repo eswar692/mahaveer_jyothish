@@ -7,7 +7,7 @@ const ImageView = () => {
     <div className="relative w-full h-[560px] md:h-[620px] overflow-hidden">
       {/* Background image */}
       <img
-        src="https://i.pinimg.com/1200x/67/24/c1/6724c1236dfb7f5f96e422ef92cb6fd2.jpg"
+        src="https://i.pinimg.com/1200x/cd/9f/20/cd9f20cc6b731b518752360f4f18088b.jpg"
         alt={`${company_name} Banner`}
         className="w-full h-full object-cover scale-105"
       />

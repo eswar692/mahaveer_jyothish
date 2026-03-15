@@ -1,17 +1,17 @@
-const phone_number = "83105 58509";
+const phone_number = "9121149465";
 const email = "";
-const whatsapp_number = "83105 58509";
-const company_name = "Kerala Veda Consult";
-const person_name = "Kerala Veda Consult";
+const whatsapp_number = "9121149465";
+const company_name = "Mahaveer Jyothish";
+const person_name = "Mahaveer Jyothish";
 const address = {
-  line1: "42, Raju Complex, Korahalli,",
-  line2: "4th cross, ramalayam street, Baragur",
-  state: "Karnataka",
-  pincode: "573225",
-  District: "Hassan",
+  line1: "4, jyothirgiri, chottanikkara",
+  line2: "6, bhagavathi street, chottanikkara",
+  state: "Kerala",
+  pincode: "682312",
+  District: "Ernakulam",
   country: "India",
 };
-const website_url = "https://www.keralavedaconsult.in/";
+const website_url = "https://www.mahaveerjyothish.in/";
 
 export {
   phone_number,

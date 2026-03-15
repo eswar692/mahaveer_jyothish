@@ -5,8 +5,9 @@ import {
   MapPin,
   ChevronRight,
   ExternalLink,
+  ArrowRight,
 } from "lucide-react";
-import useInViewOnce from "./InView";
+import { useState, useEffect, useRef } from "react";
 import {
   address,
   company_name,
@@ -16,152 +17,310 @@ import {
   whatsapp_number,
 } from "./secrete";
 
+// ─── Simple inView hook (self-contained, no external dependency) ──────────────
+const useInView = (threshold = 0.2) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) setInView(true);
+      },
+      { threshold },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, inView] as const;
+};
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+
 export default function Footer() {
-  const [ref, inView] = useInViewOnce(0.2);
+  const [ref, inView] = useInView(0.15);
 
   return (
-    <motion.footer className="relative mt-2 w-full overflow-hidden text-white z-[999] bg-gradient-to-br from-slate-950 via-zinc-900 to-slate-950">
-      {/* Top shimmer line */}
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent opacity-60" />
+    <footer className="relative w-full overflow-hidden text-white bg-[#06060c]">
+      {/* Top shimmer */}
+      <div className="h-px bg-[linear-gradient(90deg,transparent,rgba(212,175,55,0.6)_30%,rgba(245,226,122,0.9)_50%,rgba(212,175,55,0.6)_70%,transparent)]" />
 
-      {/* Dot grid overlay */}
-      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none" />
+      {/* Dot grid */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.025]"
+        style={{
+          backgroundImage: "radial-gradient(#d4af37 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
+      />
 
-      {/* Ambient glows */}
-      <div className="absolute -top-20 -left-20 w-96 h-96 bg-yellow-600/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/3 -right-20 w-80 h-80 bg-indigo-700/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-yellow-500/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Ambient orbs */}
+      <div
+        className="absolute -top-24 -left-24 w-[400px] h-[400px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(212,175,55,0.06), transparent 65%)",
+        }}
+      />
+      <div
+        className="absolute top-1/2 -right-20 w-[320px] h-[320px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(99,102,241,0.04), transparent 65%)",
+        }}
+      />
+      <div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse, rgba(212,175,55,0.04), transparent 70%)",
+        }}
+      />
 
-      {/* Main content grid */}
+      {/* Main grid */}
       <motion.div
         ref={ref}
-        initial={{ y: 50, opacity: 0 }}
+        initial={{ y: 40, opacity: 0 }}
         animate={inView ? { y: 0, opacity: 1 } : {}}
-        transition={{ duration: 0.9, ease: "easeOut" }}
-        className="relative max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-3 gap-12"
+        transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        className="relative max-w-[1400px] mx-auto px-5 md:px-10 py-16 md:py-20 grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16"
       >
         {/* ── ABOUT ── */}
-        <div className="flex flex-col gap-4">
-          <SectionLabel>About Us</SectionLabel>
-          <h2 className="font-serif text-2xl font-bold text-white tracking-wide leading-snug">
-            {company_name}
-          </h2>
-          <div className="w-10 h-px bg-gradient-to-r from-yellow-500 to-transparent" />
-          <p className="text-sm leading-relaxed text-zinc-400 font-light">
-            <span className="text-white font-medium">{company_name}</span>{" "}
+        <div className="flex flex-col gap-5">
+          <ColEyebrow>About Us</ColEyebrow>
+
+          <div>
+            <h2
+              className="text-white font-bold leading-none"
+              style={{
+                fontFamily: "'Cinzel Decorative', 'Playfair Display', serif",
+                fontSize: "1.35rem",
+              }}
+            >
+              {company_name}
+            </h2>
+            <div className="flex items-center gap-2 mt-2">
+              <div className="h-px w-8 bg-[linear-gradient(90deg,#d4af37,transparent)]" />
+              <div className="w-1 h-1 bg-[#d4af37]/50 rotate-45" />
+            </div>
+          </div>
+
+          <p
+            className="leading-relaxed"
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "0.82rem",
+              fontWeight: 300,
+              color: "rgba(255,255,255,0.45)",
+            }}
+          >
+            <span className="text-white/80 font-medium">{company_name}</span>{" "}
             offers traditional Kerala wellness consultations rooted in years of
             experience and responsible practice.{" "}
-            <span className="text-yellow-400 font-medium">{person_name}</span>{" "}
+            <span className="text-[#d4af37]/75 font-medium">{person_name}</span>{" "}
             provides thoughtful sessions focused on clarity, balance, and
             personal well-being across relationships, career, and life planning.
           </p>
-          <p className="text-[10px] tracking-[0.18em] uppercase text-yellow-500/80 mt-1">
-            ✦ Trusted &nbsp;•&nbsp; Confidential &nbsp;•&nbsp; Respectful
-          </p>
+
+          {/* Trust chips */}
+          <div className="flex flex-wrap gap-2 mt-1">
+            {["Trusted", "Confidential", "Respectful"].map((label) => (
+              <span
+                key={label}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+                style={{
+                  background: "rgba(212,175,55,0.05)",
+                  border: "1px solid rgba(212,175,55,0.12)",
+                  fontFamily: "'Outfit', sans-serif",
+                  fontSize: "0.6rem",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                  color: "rgba(212,175,55,0.6)",
+                }}
+              >
+                <span className="w-1 h-1 rounded-full bg-[#d4af37]/50" />
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* ── CONTACT ── */}
-        <div className="flex flex-col gap-4">
-          <SectionLabel>Contact</SectionLabel>
-          <h2 className="font-serif text-2xl font-bold text-white tracking-wide leading-snug">
-            Get in Touch
-          </h2>
-          <div className="w-10 h-px bg-gradient-to-r from-yellow-500 to-transparent" />
+        <div className="flex flex-col gap-5">
+          <ColEyebrow>Contact</ColEyebrow>
 
-          <div className="flex flex-col gap-3 mt-1">
+          <div>
+            <h2
+              className="text-white font-bold leading-none"
+              style={{
+                fontFamily: "'Cinzel Decorative', 'Playfair Display', serif",
+                fontSize: "1.35rem",
+              }}
+            >
+              Get in Touch
+            </h2>
+            <div className="flex items-center gap-2 mt-2">
+              <div className="h-px w-8 bg-[linear-gradient(90deg,#d4af37,transparent)]" />
+              <div className="w-1 h-1 bg-[#d4af37]/50 rotate-45" />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
             <ContactRow
               icon={
-                <Phone size={14} className="text-yellow-400 mt-0.5 shrink-0" />
+                <Phone
+                  size={13}
+                  strokeWidth={2}
+                  className="text-[#d4af37]/70 mt-0.5 flex-shrink-0"
+                />
               }
             >
-              <span className="text-zinc-300 text-sm tracking-wide">
-                {phone_number}
-              </span>
+              <a
+                href={`tel:${phone_number}`}
+                className="no-underline transition-colors duration-200 hover:text-[#d4af37]"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.82rem",
+                  color: "rgba(255,255,255,0.6)",
+                  letterSpacing: "0.03em",
+                }}
+              >
+                +91 {phone_number}
+              </a>
             </ContactRow>
 
             <ContactRow
               icon={
                 <MessageCircle
-                  size={14}
-                  className="text-yellow-400 mt-0.5 shrink-0"
+                  size={13}
+                  strokeWidth={2}
+                  className="text-[#d4af37]/70 mt-0.5 flex-shrink-0"
                 />
               }
             >
-              <span className="text-zinc-300 text-sm tracking-wide">
-                {whatsapp_number}
-              </span>
+              <a
+                href={`https://wa.me/${whatsapp_number}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="no-underline transition-colors duration-200 hover:text-[#d4af37]"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.82rem",
+                  color: "rgba(255,255,255,0.6)",
+                  letterSpacing: "0.03em",
+                }}
+              >
+                +91 {whatsapp_number}
+              </a>
             </ContactRow>
 
             <ContactRow
               icon={
-                <MapPin size={14} className="text-yellow-400 mt-0.5 shrink-0" />
+                <MapPin
+                  size={13}
+                  strokeWidth={2}
+                  className="text-[#d4af37]/70 mt-0.5 flex-shrink-0"
+                />
               }
             >
-              <span className="text-zinc-300 text-sm leading-relaxed">
-                <span className="text-white font-medium">{address.line1}</span>
+              <p
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.8rem",
+                  fontWeight: 300,
+                  color: "rgba(255,255,255,0.5)",
+                  lineHeight: 1.7,
+                }}
+              >
+                <span className="text-white/70 font-medium">
+                  {address.line1}
+                </span>
                 <br />
                 {address.line2}, {address.District}
                 <br />
                 {address.state} – {address.pincode}, {address.country}
-              </span>
+              </p>
             </ContactRow>
           </div>
 
-          <a
+          <motion.a
             href={`tel:${phone_number}`}
-            className="mt-2 inline-flex items-center gap-2 w-fit px-5 py-2.5 rounded-md
-            bg-gradient-to-r from-yellow-500 to-yellow-400
-            text-black text-xs font-bold uppercase tracking-widest
-            shadow-lg shadow-yellow-500/20
-            hover:shadow-yellow-500/40 hover:-translate-y-0.5
-            transition-all duration-200"
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="group w-fit inline-flex items-center gap-2.5 no-underline px-5 py-2.5 rounded-sm font-semibold tracking-[0.08em] uppercase text-[#06060c]"
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+              fontSize: "0.72rem",
+              background: "linear-gradient(135deg, #d4af37, #f5e27a)",
+              boxShadow: "0 4px 20px rgba(212,175,55,0.35)",
+            }}
           >
-            <Phone size={13} /> Call Us Today
-          </a>
+            <Phone size={12} strokeWidth={2.5} />
+            Call Us Today
+            <ArrowRight
+              size={11}
+              strokeWidth={2.5}
+              className="opacity-60 group-hover:translate-x-0.5 transition-transform duration-200"
+            />
+          </motion.a>
         </div>
 
         {/* ── POLICIES ── */}
-        <div className="flex flex-col gap-4">
-          <SectionLabel>Legal</SectionLabel>
-          <h2 className="font-serif text-2xl font-bold text-white tracking-wide leading-snug">
-            Support & Policies
-          </h2>
-          <div className="w-10 h-px bg-gradient-to-r from-yellow-500 to-transparent" />
+        <div className="flex flex-col gap-5">
+          <ColEyebrow>Legal</ColEyebrow>
 
-          <ul className="flex flex-col gap-1 mt-1">
+          <div>
+            <h2
+              className="text-white font-bold leading-none"
+              style={{
+                fontFamily: "'Cinzel Decorative', 'Playfair Display', serif",
+                fontSize: "1.35rem",
+              }}
+            >
+              Support &amp;
+              <br />
+              <span className="text-[#d4af37]">Policies</span>
+            </h2>
+            <div className="flex items-center gap-2 mt-2">
+              <div className="h-px w-8 bg-[linear-gradient(90deg,#d4af37,transparent)]" />
+              <div className="w-1 h-1 bg-[#d4af37]/50 rotate-45" />
+            </div>
+          </div>
+
+          <ul className="flex flex-col gap-1 p-0 m-0 list-none">
             {[
               { label: "Privacy Policy", href: "/privacy-policy" },
               { label: "Terms & Conditions", href: "/terms" },
               { label: "Contact Us", href: "/contact" },
             ].map(({ label, href }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-md text-sm text-zinc-400
-                  border border-transparent
-                  hover:text-yellow-400 hover:bg-yellow-500/5 hover:border-yellow-500/20
-                  transition-all duration-200"
-                >
-                  <ChevronRight size={13} className="opacity-40" />
-                  {label}
-                </a>
-              </li>
+              <PolicyLink key={label} label={label} href={href} />
             ))}
           </ul>
         </div>
       </motion.div>
 
-      <CopyRightAndContact />
-    </motion.footer>
+      {/* ── Bottom bar ── */}
+      <CopyBar />
+
+      {/* Fonts */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&family=DM+Sans:wght@300;400;500&family=Outfit:wght@400;500;600;700&display=swap');
+      `}</style>
+    </footer>
   );
 }
 
-/* ── Reusable sub-components ── */
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
-const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex items-center gap-2">
-    <div className="w-4 h-px bg-gradient-to-r from-yellow-500 to-transparent" />
-    <span className="text-[10px] font-semibold tracking-[0.22em] uppercase text-yellow-500">
+const ColEyebrow = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex items-center gap-2.5">
+    <div className="w-6 h-px bg-[linear-gradient(90deg,#d4af37,transparent)]" />
+    <span
+      className="text-[#d4af37]/55 tracking-[0.26em] uppercase"
+      style={{ fontFamily: "monospace", fontSize: "0.58rem" }}
+    >
       {children}
     </span>
   </div>
@@ -180,43 +339,105 @@ const ContactRow = ({
   </div>
 );
 
-const CopyRightAndContact = () => (
-  <div className="border-t border-white/5 bg-black/30 backdrop-blur-sm">
-    <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
-      {/* Left — dev credit */}
-      <div className="flex items-center gap-3 flex-wrap justify-center md:justify-start">
-        <span className="text-xs text-zinc-500 tracking-wide">
+const PolicyLink = ({ label, href }: { label: string; href: string }) => {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <li>
+      <a
+        href={href}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg no-underline transition-all duration-200"
+        style={{
+          background: hovered ? "rgba(212,175,55,0.06)" : "transparent",
+          border: hovered
+            ? "1px solid rgba(212,175,55,0.15)"
+            : "1px solid transparent",
+        }}
+      >
+        <ChevronRight
+          size={12}
+          strokeWidth={2}
+          style={{
+            color: hovered ? "#d4af37" : "rgba(255,255,255,0.2)",
+            transition: "color 0.2s ease, transform 0.2s ease",
+            transform: hovered ? "translateX(2px)" : "translateX(0)",
+          }}
+        />
+        <span
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: "0.82rem",
+            fontWeight: 400,
+            color: hovered ? "rgba(212,175,55,0.85)" : "rgba(255,255,255,0.45)",
+            transition: "color 0.2s ease",
+            letterSpacing: "0.01em",
+          }}
+        >
+          {label}
+        </span>
+      </a>
+    </li>
+  );
+};
+
+const CopyBar = () => (
+  <div
+    className="border-t"
+    style={{
+      borderColor: "rgba(255,255,255,0.05)",
+      background: "rgba(0,0,0,0.35)",
+    }}
+  >
+    <div className="max-w-[1400px] mx-auto px-5 md:px-10 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
+      {/* Dev credit */}
+      <div className="flex items-center gap-2.5 flex-wrap justify-center md:justify-start">
+        <span
+          className="text-white/25"
+          style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.72rem" }}
+        >
           Designed &amp; Developed by
         </span>
         <a
           href="https://wa.me/918886921826?text=Hello%2C%20I%20found%20your%20contact%20via%20the%20website"
           aria-label="Contact Eswar on WhatsApp"
+          className="no-underline"
         >
           <span
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full
-            bg-gradient-to-r from-yellow-500 to-yellow-400
-            text-black text-xs font-bold tracking-wide
-            shadow-md shadow-yellow-500/20
-            hover:shadow-yellow-500/40 hover:scale-105
-            transition-all duration-200 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-bold text-[#06060c] transition-all duration-200 hover:scale-105"
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+              fontSize: "0.7rem",
+              letterSpacing: "0.05em",
+              background: "linear-gradient(135deg, #d4af37, #f5e27a)",
+              boxShadow: "0 2px 12px rgba(212,175,55,0.3)",
+            }}
           >
-            Eswar <ExternalLink size={10} />
+            Eswar <ExternalLink size={9} strokeWidth={2.5} />
           </span>
         </a>
       </div>
 
-      {/* Right — copyright */}
-      <p className="text-xs text-zinc-500 tracking-wide text-center md:text-right">
+      {/* Copyright */}
+      <p
+        className="text-center md:text-right"
+        style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: "0.72rem",
+          color: "rgba(255,255,255,0.25)",
+        }}
+      >
         © {new Date().getFullYear()}{" "}
         <a
           href={website_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-yellow-500 font-medium hover:text-yellow-300 transition-colors duration-200"
+          className="no-underline transition-colors duration-200 hover:text-[#d4af37]"
+          style={{ color: "rgba(212,175,55,0.6)", fontWeight: 500 }}
         >
           {company_name}
         </a>{" "}
-        • All Rights Reserved
+        · All Rights Reserved
       </p>
     </div>
   </div>
